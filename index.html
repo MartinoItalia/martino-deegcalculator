@@ -1,119 +1,118 @@
 <!DOCTYPE html>
 <html lang="nl">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Martino Deegcalculator</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f5f5f5;
-      padding: 2rem;
-      display: flex;
-      justify-content: center;
-    }
-    .container {
-      background: #ffffff;
-      padding: 2rem;
-      border-radius: 16px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-      max-width: 600px;
-      width: 100%;
-    }
-    h1 {
-      color: #9c2b22;
-      font-size: 1.8rem;
-      margin-bottom: 1rem;
-      text-align: center;
-    }
-    label {
-      display: block;
-      margin-top: 1rem;
-      font-weight: bold;
-    }
-    input, select, button {
-      width: 100%;
-      padding: 10px;
-      margin-top: 0.5rem;
-      border-radius: 4px;
-      border: 1px solid #ccc;
-      box-sizing: border-box;
-    }
-    button {
-      background-color: #9c2b22;
-      color: white;
-      border: none;
-      margin-top: 1.5rem;
-      font-weight: bold;
-    }
-    #resultaat {
-      margin-top: 2rem;
-      background-color: #f0f0f0;
-      padding: 1rem;
-      border-radius: 8px;
-      font-family: monospace;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Martino Deegcalculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f4f4;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+        .container {
+            background: #fff;
+            padding: 20px;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            max-width: 500px;
+            width: 100%;
+        }
+        h1 {
+            color: #9C2B22;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-top: 10px;
+        }
+        input, select, button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #9C2B22;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+        button:hover {
+            background-color: #7a221b;
+        }
+        #resultaat {
+            margin-top: 20px;
+            padding: 10px;
+            background: #f9f9f9;
+            border-radius: 8px;
+        }
+    </style>
 </head>
 <body>
-  <div class="container">
+<div class="container">
     <h1>Martino Deegcalculator</h1>
-    <label for="aantal">Aantal personen:</label>
-    <input type="number" id="aantal" value="10" min="1" />
 
-    <label for="poolish">Gebruik poolish (25%)?</label>
+    <label>Aantal pizza's:</label>
+    <input type="number" id="aantal" value="1">
+
+    <label>Poolish gebruiken?</label>
     <select id="poolish">
-      <option value="ja">Ja</option>
-      <option value="nee">Nee</option>
+        <option value="ja">Ja</option>
+        <option value="nee">Nee</option>
     </select>
 
     <button onclick="bereken()">Bereken recept</button>
+
     <div id="resultaat"></div>
-  </div>
+</div>
 
-  <script>
-    function bereken() {
-      const aantal = parseInt(document.getElementById('aantal').value);
-      const gebruikPoolish = document.getElementById('poolish').value === 'ja';
+<script>
+function bereken() {
+    const aantal = parseInt(document.getElementById('aantal').value);
+    const gebruikPoolish = document.getElementById('poolish').value === 'ja';
 
-      const gewicht = 270; // vast gewicht per deegbal in gram
-      const hydratatie = 0.65;
-      const zoutPerc = 0.03;
-      const gistPerc = 0.001;
-      const honingPerc = 0.001;
-      const verliesfactor = 1.02;
-      const poolishPerc = gebruikPoolish ? 0.25 : 0;
+    const gewichtPerBal = 270;
+    const hydratatie = 0.65;
+    const zoutPerc = 0.03;
+    const gistPerc = 0.001;
+    const honingPerc = 0.001;
+    const verliesfactor = 1.02;
 
-      const totaalgewicht = gewicht * aantal * verliesfactor;
+    const totaalgewicht = gewichtPerBal * aantal * verliesfactor;
 
-      const bloem = totaalgewicht / (1 + hydratatie + zoutPerc + gistPerc + honingPerc);
-      const water = bloem * hydratatie;
-      const zout = bloem * zoutPerc;
-      const gist = bloem * gistPerc;
-      const honing = bloem * honingPerc;
+    const bloem = totaalgewicht / (1 + hydratatie + zoutPerc + gistPerc + honingPerc);
+    const water = bloem * hydratatie;
+    const zout = bloem * zoutPerc;
+    const gist = bloem * gistPerc;
+    const honing = bloem * honingPerc;
 
-      let resultaat = `<strong>Ingrediënten voor ${aantal} pizza's van 270g (Napolitaans):</strong><br>
-        Totale deegmassa: ${totaalgewicht.toFixed(0)} g<br>`;
+    let resultaat = `<strong>Ingrediënten voor ${aantal} pizza's van 270g (Napolitaans):</strong><br>
+                     Totale deegmassa: ${totaalgewicht.toFixed(0)} g<br>`;
 
-      if (gebruikPoolish) {
-        const poolishBloem = bloem * poolishPerc;
-        const poolishWater = water * poolishPerc;
-        const eindBloem = bloem - poolishBloem;
-        const eindWater = water - poolishWater;
+    if (gebruikPoolish) {
+        const poolishBloem = (bloem * 0.25).toFixed(1);
+        const poolishWater = (poolishBloem);
+        const eindBloem = (bloem - poolishBloem).toFixed(1);
+        const eindWater = (water - poolishWater).toFixed(1);
 
         resultaat += `
         <br><strong>Poolish (25%)</strong><br>
-        Bloem: ${poolishBloem.toFixed(1)} g<br>
-        Water: ${poolishWater.toFixed(1)} g<br>
+        Bloem: ${poolishBloem} g<br>
+        Water: ${poolishWater} g<br>
         Gist: ${gist.toFixed(1)} g<br>
         Honing: ${honing.toFixed(1)} g<br>
 
-        <br><strong>Eindeeg</strong><br>
-        Bloem: ${eindBloem.toFixed(1)} g<br>
-        Water: ${eindWater.toFixed(1)} g<br>
+        <br><strong>Einddeeg</strong><br>
+        Bloem: ${eindBloem} g<br>
+        Water: ${eindWater} g<br>
         Zout: ${zout.toFixed(1)} g<br>
         `;
-      } else {
+    } else {
         resultaat += `
         Bloem: ${bloem.toFixed(1)} g<br>
         Water: ${water.toFixed(1)} g<br>
@@ -121,10 +120,10 @@
         Gist: ${gist.toFixed(1)} g<br>
         Honing: ${honing.toFixed(1)} g<br>
         `;
-      }
-
-      document.getElementById('resultaat').innerHTML = resultaat;
     }
-  </script>
+
+    document.getElementById("resultaat").innerHTML = resultaat;
+}
+</script>
 </body>
 </html>
