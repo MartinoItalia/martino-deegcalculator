@@ -9,36 +9,43 @@
       --groen: #386533;
       --rood: #7c2113;
       --goud: #854d11;
-      --offwhite: #fefaf4;
+      --offwhite: #fefaf4; /* We gebruiken dit voor de container */
     }
+
+    /* Hele pagina wit */
     body {
       font-family: Arial, sans-serif;
-      background: var(--offwhite);
+      background: #ffffff; /* Helder wit als achtergrond */
       margin: 0;
       padding: 2rem;
       display: flex;
       justify-content: center;
     }
+
     .container {
-      background: white;
+      /* Subtiel off-white voor contrast */
+      background: var(--offwhite);
       padding: 2rem;
       border-radius: 20px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.1);
       max-width: 700px;
       width: 100%;
     }
+
     h1 {
       color: var(--rood);
       font-size: 2rem;
       margin-bottom: 1rem;
       text-align: center;
     }
+
     label {
       display: block;
       margin-bottom: 0.25rem;
       font-weight: bold;
       color: #333;
     }
+
     input[type="number"], select, button {
       width: 100%;
       padding: 0.75rem;
@@ -48,6 +55,7 @@
       box-sizing: border-box;
       font-size: 1rem;
     }
+
     button {
       background-color: var(--rood);
       color: white;
@@ -56,36 +64,40 @@
       cursor: pointer;
       transition: background-color 0.3s, color 0.3s;
     }
+
     button:hover {
       background-color: #5e1910;
       color: white;
     }
+
+    /* Resultaat-vlak met netter font, lichte schaduw */
     #resultaat {
       padding: 1rem;
       border-radius: 8px;
-      background-color: #f2f2f2;
+      background-color: #ffffff;
+      /* Geen monospace meer, maar zelfde font als rest */
+      font-family: Arial, sans-serif; 
+      font-size: 1rem;
+      line-height: 1.6;
+      color: #121212;
       white-space: pre-wrap;
-      font-family: monospace;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
     }
-    .logo {
-      text-align: center;
-      margin-bottom: 1rem;
-    }
-    .logo img {
-      width: 120px;
-    }
+
     .checkbox-line {
       display: flex;
       align-items: center;
       gap: 0.5rem;
       margin-bottom: 1rem;
     }
+
     .advanced {
       display: none;
       margin-top: 1rem;
       border-top: 1px dashed #ccc;
       padding-top: 1rem;
     }
+
     .toggle-advanced {
       background: none;
       color: var(--rood);
@@ -96,6 +108,7 @@
       padding: 0;
       margin-bottom: 1rem;
     }
+
     .toggle-advanced:hover {
       background-color: var(--rood);
       color: white;
@@ -106,11 +119,9 @@
 </head>
 <body>
   <div class="container">
+    <!-- Logo DIV VERWIJDERD -->
 
-    <div class="logo">
-      <img src="logo.png" alt="Martino logo">
-    </div>
-    <h1>Deegcalculator</h1>
+    <h1>Pizzadeeg Calculator</h1>
 
     <!-- Basisinstellingen -->
     <label>Aantal personen:</label>
@@ -119,7 +130,7 @@
     <label>Type pizza:</label>
     <select id="typePizza" onchange="changeTypePizza()">
       <option value="modern" selected>Modern Napolitaans</option>
-      <option value="klassiek">Klassiek Napolitaans</option>
+      <option value="klassiek">Klassiek</option>
     </select>
 
     <label>Reistijd:</label>
@@ -141,8 +152,6 @@
     </button>
 
     <div class="advanced" id="advancedSettings">
-
-      <!-- Checkbox aanbevolen waarden -->
       <div class="checkbox-line">
         <input type="checkbox" id="resetSliders" onclick="applyRecommended()">
         <span>aanbevolen waarden</span>
@@ -160,8 +169,8 @@
       <label>Poolishpercentage: <span id="poolishVal">25%</span></label>
       <input type="range" id="poolish" min="0" max="50" value="25" step="5" oninput="sliderChanged()">
 
-      <label>Honingpercentage: <span id="honingVal">0.1%</span></label>
-      <input type="range" id="honing" min="0" max="2" value="0.1" step="0.1" oninput="sliderChanged()">
+      <label>Honingpercentage: <span id="honingVal">0%</span></label>
+      <input type="range" id="honing" min="0" max="1" value="0.1" step="0.1" oninput="sliderChanged()">
 
       <label>Olijfoliepercentage: <span id="olieVal">2%</span></label>
       <input type="range" id="olie" min="1" max="3" value="2" step="0.1" oninput="sliderChanged()">
@@ -247,7 +256,7 @@
         document.getElementById("olie").disabled = false;
       }
       document.getElementById("zout").value    = 3;
-      document.getElementById("honing").value  = 0.1;
+      document.getElementById("honing").value  = 0;
       document.getElementById("verlies").value = 2;
 
       // Poolish
@@ -295,8 +304,8 @@
       const reistijd = parseInt(document.getElementById("reistijd").value);
       let gistPerc = 0.001; // default
       if (reistijd === 4)   gistPerc = 0.005;  // 0.5%
-      else if (reistijd === 26) gistPerc = 0.001;  // 0.1%
-      else if (reistijd === 74) gistPerc = 0.0003; // 0.03%
+      else if (reistijd === 26) gistPerc = 0.0011;  // 0.11%
+      else if (reistijd === 74) gistPerc = 0.0006; // 0.06%
 
       const totaalGewicht = gewicht * aantal * verliesF;
       const bloem = totaalGewicht / (1 + hydr + zoutPerc + honingP + olieP);
