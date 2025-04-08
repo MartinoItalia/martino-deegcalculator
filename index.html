@@ -1,1 +1,112 @@
 
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Martino Deegcalculator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      padding: 30px;
+      display: flex;
+      justify-content: center;
+    }
+    .container {
+      background: #fff;
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      max-width: 500px;
+      width: 100%;
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #9C2B22;
+    }
+    label {
+      display: block;
+      margin: 10px 0 5px;
+      font-weight: bold;
+    }
+    input, select, button {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 15px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+    button {
+      background-color: #9C2B22;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #641220;
+    }
+    .result {
+      margin-top: 20px;
+      background: #f9f9f9;
+      padding: 15px;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Martino Deegcalculator</h2>
+    <label for="stijl">Kies een stijl:</label>
+    <select id="stijl">
+      <option value="napo">Napolitaans</option>
+      <option value="ny">New York Style</option>
+    </select>
+
+    <label for="personen">Aantal personen:</label>
+    <input type="number" id="personen" value="10" />
+
+    <label for="gewicht">Gewicht per deegbal (g):</label>
+    <input type="number" id="gewicht" value="280" />
+
+    <button onclick="bereken()">Bereken recept</button>
+
+    <div class="result" id="resultaat"></div>
+  </div>
+
+  <script>
+    function bereken() {
+      const stijl = document.getElementById("stijl").value;
+      const personen = parseFloat(document.getElementById("personen").value);
+      const gewicht = parseFloat(document.getElementById("gewicht").value);
+
+      const verliesFactor = 1.02;
+
+      const stijlen = {
+        napo: { hydratatie: 0.65, zout: 0.03, gist: 0.001, honing: 0.001 },
+        ny: { hydratatie: 0.60, zout: 0.02, gist: 0.003, honing: 0 }
+      };
+
+      const s = stijlen[stijl];
+      const totaalGewicht = gewicht * personen * verliesFactor;
+
+      const bloem = totaalGewicht / (1 + s.hydratatie + s.zout + s.gist + s.honing);
+      const water = bloem * s.hydratatie;
+      const zout = bloem * s.zout;
+      const gist = bloem * s.gist;
+      const honing = bloem * s.honing;
+
+      document.getElementById("resultaat").innerHTML = `
+        <strong>Totale deegmassa:</strong> ${totaalGewicht.toFixed(1)} g<br />
+        <strong>Bloem:</strong> ${bloem.toFixed(1)} g<br />
+        <strong>Water:</strong> ${water.toFixed(1)} g<br />
+        <strong>Zout:</strong> ${zout.toFixed(1)} g<br />
+        <strong>Gist:</strong> ${gist.toFixed(1)} g<br />
+        <strong>Honing:</strong> ${honing.toFixed(1)} g
+      `;
+    }
+  </script>
+</body>
+</html>
