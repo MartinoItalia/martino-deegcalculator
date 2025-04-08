@@ -2,18 +2,16 @@
 <html lang="nl">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Martino Deegcalculator</title>
   <style>
     body {
       font-family: Arial, sans-serif;
       background: #f5f5f5;
-      margin: 0;
       padding: 2rem;
       display: flex;
       justify-content: center;
     }
-
     .container {
       background: #ffffff;
       padding: 2rem;
@@ -22,132 +20,110 @@
       max-width: 600px;
       width: 100%;
     }
-
     h1 {
-      color: #9C2B22;
+      color: #9c2b22;
       font-size: 1.8rem;
-      margin-bottom: 0.5rem;
+      margin-bottom: 1rem;
+      text-align: center;
     }
-
-    p.description {
-      margin-bottom: 1.5rem;
-      color: #403e3e;
-    }
-
     label {
       display: block;
-      margin-bottom: 0.5rem;
+      margin-top: 1rem;
       font-weight: bold;
     }
-
-    input[type="number"] {
+    input, select, button {
       width: 100%;
-      padding: 0.6rem;
-      margin-bottom: 1rem;
-      border-radius: 8px;
+      padding: 10px;
+      margin-top: 0.5rem;
+      border-radius: 4px;
       border: 1px solid #ccc;
+      box-sizing: border-box;
     }
-
-    .checkbox {
-      margin-bottom: 1rem;
-    }
-
     button {
-      width: 100%;
-      background-color: #9C2B22;
+      background-color: #9c2b22;
       color: white;
-      padding: 0.75rem;
       border: none;
-      border-radius: 8px;
-      font-size: 1rem;
-      cursor: pointer;
+      margin-top: 1.5rem;
+      font-weight: bold;
     }
-
-    button:hover {
-      background-color: #641220;
-    }
-
-    .result {
+    #resultaat {
       margin-top: 2rem;
-      background: #fafafa;
+      background-color: #f0f0f0;
       padding: 1rem;
-      border-radius: 12px;
-      border: 1px solid #ddd;
-      color: #333;
+      border-radius: 8px;
+      font-family: monospace;
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>Bereken je perfecte pizzadeeg</h1>
-    <p class="description">
-      Voor de Fiamma Compact (12”), Napolitaanse stijl. Vul het aantal pizza’s in en ontdek exact hoeveel bloem, water, zout, gist en honing je nodig hebt.
-    </p>
+    <h1>Martino Deegcalculator</h1>
+    <label for="aantal">Aantal personen:</label>
+    <input type="number" id="aantal" value="10" min="1" />
 
-    <label for="aantal">Aantal pizza’s</label>
-    <input type="number" id="aantal" value="4" min="1" />
+    <label for="poolish">Gebruik poolish (25%)?</label>
+    <select id="poolish">
+      <option value="ja">Ja</option>
+      <option value="nee">Nee</option>
+    </select>
 
-    <div class="checkbox">
-      <label><input type="checkbox" id="poolish" /> Gebruik poolish (25%)</label>
-    </div>
-
-    <button onclick="bereken()">Bereken deegrecept</button>
-
-    <div class="result" id="resultaat"></div>
+    <button onclick="bereken()">Bereken recept</button>
+    <div id="resultaat"></div>
   </div>
 
   <script>
     function bereken() {
-      const aantal = parseFloat(document.getElementById("aantal").value);
-      const gebruikPoolish = document.getElementById("poolish").checked;
+      const aantal = parseInt(document.getElementById('aantal').value);
+      const gebruikPoolish = document.getElementById('poolish').value === 'ja';
 
-      const gewichtPerBol = 280;
+      const gewicht = 270; // vast gewicht per deegbal in gram
       const hydratatie = 0.65;
       const zoutPerc = 0.03;
       const gistPerc = 0.001;
       const honingPerc = 0.001;
-      const verliesFactor = 1.02;
+      const verliesfactor = 1.02;
+      const poolishPerc = gebruikPoolish ? 0.25 : 0;
 
-      const totaalGewicht = aantal * gewichtPerBol * verliesFactor;
-      const bloem = totaalGewicht / (1 + hydratatie + zoutPerc + gistPerc + honingPerc);
+      const totaalgewicht = gewicht * aantal * verliesfactor;
+
+      const bloem = totaalgewicht / (1 + hydratatie + zoutPerc + gistPerc + honingPerc);
       const water = bloem * hydratatie;
       const zout = bloem * zoutPerc;
       const gist = bloem * gistPerc;
       const honing = bloem * honingPerc;
 
-      let resultaat = `
-        <strong>Ingrediënten voor ${aantal} pizza’s van 280g (Napolitaans):</strong><br>
-        Totale deegmassa: ${totaalGewicht.toFixed(0)} g<br>
-      `;
+      let resultaat = `<strong>Ingrediënten voor ${aantal} pizza's van 270g (Napolitaans):</strong><br>
+        Totale deegmassa: ${totaalgewicht.toFixed(0)} g<br>`;
 
       if (gebruikPoolish) {
-        const poolishBloem = bloem * 0.25;
-        const poolishWater = water * 0.25;
+        const poolishBloem = bloem * poolishPerc;
+        const poolishWater = water * poolishPerc;
         const eindBloem = bloem - poolishBloem;
         const eindWater = water - poolishWater;
 
         resultaat += `
-          <br><strong>Poolish (25%)</strong><br>
-          Bloem: ${poolishBloem.toFixed(1)} g<br>
-          Water: ${poolishWater.toFixed(1)} g<br>
-          Gist: ${gist.toFixed(1)} g<br>
-          Honing: ${honing.toFixed(1)} g<br>
-          <br><strong>Einddeeg</strong><br>
-          Bloem: ${eindBloem.toFixed(1)} g<br>
-          Water: ${eindWater.toFixed(1)} g<br>
-          Zout: ${zout.toFixed(1)} g<br>
+        <br><strong>Poolish (25%)</strong><br>
+        Bloem: ${poolishBloem.toFixed(1)} g<br>
+        Water: ${poolishWater.toFixed(1)} g<br>
+        Gist: ${gist.toFixed(1)} g<br>
+        Honing: ${honing.toFixed(1)} g<br>
+
+        <br><strong>Eindeeg</strong><br>
+        Bloem: ${eindBloem.toFixed(1)} g<br>
+        Water: ${eindWater.toFixed(1)} g<br>
+        Zout: ${zout.toFixed(1)} g<br>
         `;
       } else {
         resultaat += `
-          Bloem: ${bloem.toFixed(1)} g<br>
-          Water: ${water.toFixed(1)} g<br>
-          Zout: ${zout.toFixed(1)} g<br>
-          Gist: ${gist.toFixed(1)} g<br>
-          Honing: ${honing.toFixed(1)} g<br>
+        Bloem: ${bloem.toFixed(1)} g<br>
+        Water: ${water.toFixed(1)} g<br>
+        Zout: ${zout.toFixed(1)} g<br>
+        Gist: ${gist.toFixed(1)} g<br>
+        Honing: ${honing.toFixed(1)} g<br>
         `;
       }
 
-      document.getElementById("resultaat").innerHTML = resultaat;
+      document.getElementById('resultaat').innerHTML = resultaat;
     }
   </script>
 </body>
