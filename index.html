@@ -5,50 +5,60 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Martino Deegcalculator</title>
   <style>
+    :root {
+      --groen: #386533;
+      --rood: #7c2113;
+      --goud: #854d11;
+      --offwhite: #fefaf4;
+    }
     body {
       font-family: Arial, sans-serif;
-      background: #f5f5f5;
+      background: var(--offwhite);
       margin: 0;
       padding: 2rem;
       display: flex;
       justify-content: center;
     }
     .container {
-      background: #ffffff;
+      background: white;
       padding: 2rem;
-      border-radius: 16px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-      max-width: 600px;
+      border-radius: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      max-width: 700px;
       width: 100%;
     }
     h1 {
-      color: #9C2B22;
-      font-size: 1.8rem;
-      margin-bottom: 0.5rem;
+      color: var(--rood);
+      font-size: 2rem;
+      margin-bottom: 1rem;
       text-align: center;
     }
     label {
       display: block;
-      margin-bottom: 0.5rem;
+      margin-bottom: 0.25rem;
       font-weight: bold;
+      color: #333;
     }
-    input, select, button {
+    input[type="number"], select, button {
       width: 100%;
       padding: 0.75rem;
       margin-bottom: 1rem;
       border-radius: 8px;
       border: 1px solid #ccc;
       box-sizing: border-box;
+      font-size: 1rem;
     }
     button {
-      background-color: #9C2B22;
+      background-color: var(--rood);
       color: white;
       font-weight: bold;
       border: none;
       cursor: pointer;
+      transition: background-color 0.3s, color 0.3s;
     }
     button:hover {
-      background-color: #821f18;
+      background-color: #5e1910;
+      color: white;
     }
     #resultaat {
       padding: 1rem;
@@ -57,75 +67,286 @@
       white-space: pre-wrap;
       font-family: monospace;
     }
+    .logo {
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+    .logo img {
+      width: 120px;
+    }
+    .checkbox-line {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+    .advanced {
+      display: none;
+      margin-top: 1rem;
+      border-top: 1px dashed #ccc;
+      padding-top: 1rem;
+    }
+    .toggle-advanced {
+      background: none;
+      color: var(--rood);
+      border: none;
+      font-size: 1rem;
+      cursor: pointer;
+      text-align: left;
+      padding: 0;
+      margin-bottom: 1rem;
+    }
+    .toggle-advanced:hover {
+      background-color: var(--rood);
+      color: white;
+      border-radius: 10px;
+      padding: 0.5rem;
+    }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>Martino Deegcalculator</h1>
-    <label>Aantal personen:</label>
-    <input type="number" id="aantal" value="10"/>
 
-    <label>Gebruik poolish (25%)?</label>
-    <select id="poolish">
+    <div class="logo">
+      <img src="logo.png" alt="Martino logo">
+    </div>
+    <h1>Deegcalculator</h1>
+
+    <!-- Basisinstellingen -->
+    <label>Aantal personen:</label>
+    <input type="number" id="aantal" value="4" min="1">
+
+    <label>Type pizza:</label>
+    <select id="typePizza" onchange="changeTypePizza()">
+      <option value="modern" selected>Modern Napolitaans</option>
+      <option value="klassiek">Klassiek Napolitaans</option>
+    </select>
+
+    <label>Reistijd:</label>
+    <select id="reistijd">
+      <option value="4">Zelfde dag (4 uur)</option>
+      <option value="26">De avond tevoren (26 uur)</option>
+      <option value="74" selected>Drie dagen (74 uur)</option>
+    </select>
+
+    <label>Gebruik poolish?</label>
+    <select id="poolishGebruik" onchange="togglePoolishSlider()">
       <option value="ja">Ja</option>
       <option value="nee">Nee</option>
     </select>
 
-    <button onclick="bereken()">Bereken recept</button>
+    <!-- Geavanceerde instellingen -->
+    <button class="toggle-advanced" id="toggleAdvancedBtn">
+      Geavanceerde instellingen tonen
+    </button>
+
+    <div class="advanced" id="advancedSettings">
+
+      <!-- Checkbox aanbevolen waarden -->
+      <div class="checkbox-line">
+        <input type="checkbox" id="resetSliders" onclick="applyRecommended()">
+        <span>aanbevolen waarden</span>
+      </div>
+
+      <label>Gewicht per deegbal (g): <span id="gewichtVal">280</span> g</label>
+      <input type="range" id="gewicht" min="250" max="300" value="280" oninput="sliderChanged()">
+
+      <label>Hydratatiegraad: <span id="hydratatieVal">65%</span></label>
+      <input type="range" id="hydratatie" min="60" max="70" value="65" oninput="sliderChanged()">
+
+      <label>Zoutpercentage: <span id="zoutVal">3%</span></label>
+      <input type="range" id="zout" min="2" max="3.5" value="3" step="0.1" oninput="sliderChanged()">
+
+      <label>Poolishpercentage: <span id="poolishVal">25%</span></label>
+      <input type="range" id="poolish" min="0" max="50" value="25" step="5" oninput="sliderChanged()">
+
+      <label>Honingpercentage: <span id="honingVal">0.1%</span></label>
+      <input type="range" id="honing" min="0" max="2" value="0.1" step="0.1" oninput="sliderChanged()">
+
+      <label>Olijfoliepercentage: <span id="olieVal">2%</span></label>
+      <input type="range" id="olie" min="1" max="3" value="2" step="0.1" oninput="sliderChanged()">
+
+      <label>Verliesfactor: <span id="verliesVal">2%</span></label>
+      <input type="range" id="verlies" min="0" max="5" value="2" step="0.5" oninput="sliderChanged()">
+    </div>
+
+    <button id="berekenBtn">Bereken recept</button>
     <div id="resultaat"></div>
   </div>
 
   <script>
-    function bereken() {
-      const aantal = parseInt(document.getElementById('aantal').value);
-      const gebruikPoolish = document.getElementById('poolish').value === 'ja';
-
-      const gewicht = 270;
-      const hydratatie = 0.65;
-      const zoutPerc = 0.03;
-      const gistPerc = 0.001;
-      const honingPerc = 0.001;
-      const verliesfactor = 1.02;
-      const poolishPerc = gebruikPoolish ? 0.25 : 0;
-
-      const totaalGewicht = gewicht * aantal * verliesfactor;
-
-      const bloem = totaalGewicht / (1 + hydratatie + zoutPerc + gistPerc + honingPerc);
-      const water = bloem * hydratatie;
-      const zout = bloem * zoutPerc;
-      const gist = bloem * gistPerc;
-      const honing = bloem * honingPerc;
-
-      let resultaat = `<strong>Ingrediënten voor ${aantal} pizza's van 270g (Napolitaans):</strong>\n`;
-      resultaat += `Totale deegmassa: ${totaalGewicht.toFixed(0)} g\n\n`;
-
-      if (gebruikPoolish) {
-        const poolishBloem = (bloem * poolishPerc);
-        const poolishWater = poolishBloem; // altijd 50/50 verhouding
-
-        const eindBloem = bloem - poolishBloem;
-        const eindWater = water - poolishWater;
-
-        resultaat += `<strong>Poolish (25%)</strong>\n`;
-        resultaat += `Bloem: ${poolishBloem.toFixed(1)} g\n`;
-        resultaat += `Water: ${poolishWater.toFixed(1)} g\n`;
-        resultaat += `Gist: ${gist.toFixed(1)} g\n`;
-        resultaat += `Honing: ${honing.toFixed(1)} g\n\n`;
-
-        resultaat += `<strong>Einddeeg</strong>\n`;
-        resultaat += `Bloem: ${eindBloem.toFixed(1)} g\n`;
-        resultaat += `Water: ${eindWater.toFixed(1)} g\n`;
-        resultaat += `Zout: ${zout.toFixed(1)} g`;
+    // Toon / verberg geavanceerd
+    const advancedBlock = document.getElementById("advancedSettings");
+    const toggleAdvBtn  = document.getElementById("toggleAdvancedBtn");
+    toggleAdvBtn.addEventListener("click", () => {
+      if (advancedBlock.style.display === "none" || advancedBlock.style.display === "") {
+        advancedBlock.style.display = "block";
+        toggleAdvBtn.textContent = "Geavanceerde instellingen verbergen";
       } else {
-        resultaat += `Bloem: ${bloem.toFixed(1)} g\n`;
-        resultaat += `Water: ${water.toFixed(1)} g\n`;
-        resultaat += `Zout: ${zout.toFixed(1)} g\n`;
-        resultaat += `Gist: ${gist.toFixed(1)} g\n`;
-        resultaat += `Honing: ${honing.toFixed(1)} g`;
+        advancedBlock.style.display = "none";
+        toggleAdvBtn.textContent = "Geavanceerde instellingen tonen";
+      }
+    });
+
+    // Sliders changed => deselect recommended
+    function sliderChanged() {
+      document.getElementById("resetSliders").checked = false;
+      updateLabels();
+    }
+
+    // Poolish lock/unlock
+    function togglePoolishSlider() {
+      const poolishSlider = document.getElementById("poolish");
+      if (document.getElementById("poolishGebruik").value === "nee") {
+        poolishSlider.value = 0;
+        poolishSlider.disabled = true;
+      } else {
+        poolishSlider.disabled = false;
+        // Als 'aanbevolen waarden' aan staat, zet weer op 25
+        if (document.getElementById("resetSliders").checked) {
+          poolishSlider.value = 25;
+        }
+      }
+      updateLabels();
+    }
+
+    // Switch pizza type
+    function changeTypePizza() {
+      // Automatisch checkbox recommended aan
+      document.getElementById("resetSliders").checked = true;
+      // En direct aanbevolen waarden toepassen
+      applyRecommended();
+    }
+
+    // Zet recommended
+    function applyRecommended() {
+      const type = document.getElementById("typePizza").value;
+      if (type === "klassiek") {
+        document.getElementById("gewicht").min = 200;
+        document.getElementById("gewicht").max = 280;
+        document.getElementById("gewicht").value = 250;
+
+        document.getElementById("hydratatie").min = 55;
+        document.getElementById("hydratatie").max = 65;
+        document.getElementById("hydratatie").value = 59;
+
+        document.getElementById("olie").value    = 0;
+        document.getElementById("olie").disabled = true;
+
+      } else {
+        // modern
+        document.getElementById("gewicht").min = 250;
+        document.getElementById("gewicht").max = 300;
+        document.getElementById("gewicht").value = 280;
+
+        document.getElementById("hydratatie").min = 60;
+        document.getElementById("hydratatie").max = 70;
+        document.getElementById("hydratatie").value = 65;
+
+        document.getElementById("olie").value    = 2;
+        document.getElementById("olie").disabled = false;
+      }
+      document.getElementById("zout").value    = 3;
+      document.getElementById("honing").value  = 0.1;
+      document.getElementById("verlies").value = 2;
+
+      // Poolish
+      const poolishUse = (document.getElementById("poolishGebruik").value === "ja");
+      const poolishSlider = document.getElementById("poolish");
+      if (poolishUse) {
+        poolishSlider.disabled = false;
+        poolishSlider.value = 25;
+      } else {
+        poolishSlider.disabled = true;
+        poolishSlider.value = 0;
       }
 
-      document.getElementById("resultaat").innerHTML = resultaat;
+      updateLabels();
     }
+
+    // update labels
+    function updateLabels() {
+      document.getElementById("gewichtVal").innerText   = document.getElementById("gewicht").value;
+      document.getElementById("hydratatieVal").innerText= document.getElementById("hydratatie").value + "%";
+      document.getElementById("zoutVal").innerText       = document.getElementById("zout").value + "%";
+      document.getElementById("poolishVal").innerText    = document.getElementById("poolish").value + "%";
+      document.getElementById("honingVal").innerText     = document.getElementById("honing").value + "%";
+      document.getElementById("olieVal").innerText       = document.getElementById("olie").value + "%";
+      document.getElementById("verliesVal").innerText    = document.getElementById("verlies").value + "%";
+    }
+
+    // Bereken
+    document.getElementById("berekenBtn").addEventListener("click", function() {
+      const aantal   = parseInt(document.getElementById("aantal").value);
+      const gewicht  = parseInt(document.getElementById("gewicht").value);
+
+      const hydr     = parseFloat(document.getElementById("hydratatie").value) / 100;
+      const zoutPerc = parseFloat(document.getElementById("zout").value) / 100;
+      const honingP  = parseFloat(document.getElementById("honing").value) / 100;
+      const olieP    = parseFloat(document.getElementById("olie").value) / 100;
+      const verliesF = 1 + (parseFloat(document.getElementById("verlies").value) / 100);
+
+      const poolishUse = (document.getElementById("poolishGebruik").value === "ja");
+      let poolishPerc  = (poolishUse)
+        ? parseFloat(document.getElementById("poolish").value) / 100
+        : 0;
+
+      // Gist op basis van reistijd
+      const reistijd = parseInt(document.getElementById("reistijd").value);
+      let gistPerc = 0.001; // default
+      if (reistijd === 4)   gistPerc = 0.005;  // 0.5%
+      else if (reistijd === 26) gistPerc = 0.001;  // 0.1%
+      else if (reistijd === 74) gistPerc = 0.0003; // 0.03%
+
+      const totaalGewicht = gewicht * aantal * verliesF;
+      const bloem = totaalGewicht / (1 + hydr + zoutPerc + honingP + olieP);
+
+      const water  = bloem * hydr;
+      const zout   = bloem * zoutPerc;
+      const honing = bloem * honingP;
+      const olie   = bloem * olieP;
+      const gist   = bloem * gistPerc;
+
+      let res = `Ingrediënten voor ${aantal} pizza's van ${gewicht}g:\n` +
+                `Totale deegmassa: ${Math.round(totaalGewicht)} g\n\n`;
+
+      if (poolishUse && poolishPerc > 0) {
+        // Poolish-berekening
+        const poolishBloem = bloem * poolishPerc;
+        const poolishWater = poolishBloem;
+        const eindBloem    = bloem - poolishBloem;
+        const eindWater    = water - poolishWater;
+
+        res += `Poolish:\n`;
+        res += `Bloem: ${Math.round(poolishBloem)} g\n`;
+        res += `Water: ${Math.round(poolishWater)} g\n`;
+        res += `Gist: ${gist.toFixed(1)} g\n`;
+        res += `Honing: ${honing.toFixed(1)} g\n\n`;
+
+        res += `Einddeeg:\n`;
+        res += `Bloem: ${Math.round(eindBloem)} g\n`;
+        res += `Water: ${Math.round(eindWater)} g\n`;
+        res += `Zout: ${Math.round(zout)} g\n`;
+        res += `Olijfolie: ${olie.toFixed(1)} g`;
+      } else {
+        // Zonder poolish
+        res += `Bloem: ${Math.round(bloem)} g\n`;
+        res += `Water: ${Math.round(water)} g\n`;
+        res += `Zout: ${Math.round(zout)} g\n`;
+        res += `Gist: ${gist.toFixed(1)} g\n`;
+        res += `Honing: ${honing.toFixed(1)} g\n`;
+        res += `Olijfolie: ${olie.toFixed(1)} g`;
+      }
+
+      document.getElementById("resultaat").innerText = res;
+    });
+
+    // Onload
+    window.onload = () => {
+      updateLabels();
+      changeTypePizza();  // Zet recommended voor modern
+      togglePoolishSlider();
+    };
   </script>
 </body>
 </html>
